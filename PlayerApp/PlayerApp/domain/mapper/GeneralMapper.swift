@@ -11,21 +11,22 @@ public final class GeneralMapper {
     
     public static func transListSongResToModel(response: ListSongRes) -> ListSongModel {
         autoreleasepool {
-            var songItem: [SongModel] = []
-            listSongItem = response.results?.map { item in
+            var songItems: [SongModel] = []
+            songItems = response.results.map { item in
                 SongModel(
                     id: item.id ?? 0,
                     trackName: item.trackName ?? "",
                     artistName: item.artistName ?? "",
+                    collectionName: item.collectionName ?? "Single / Unknown Album",
                     previewUrl: item.previewUrl ?? "",
                     artworkUrl100: item.artworkUrl100 ?? "",
                     trackTimeMillis: item.trackTimeMillis ?? 0
                 )
             } ?? []
-            
+            songItems
             var listSong: ListSongModel = ListSongModel()
-            song.results = listSongItem
-            song.resultCount = response.resultCount ?? ""
+            listSong.results = songItems
+            listSong.resultCount = response.resultCount ?? 0
             return listSong
         }
     }

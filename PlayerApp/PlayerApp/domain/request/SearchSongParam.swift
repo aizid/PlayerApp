@@ -41,7 +41,7 @@ public struct SearchSongParam {
         self.media = media
         self.entity = entity
         self.attribute = attribute
-        self.attribute = attribute
+        self.limit = limit
     }
     
 }

@@ -33,7 +33,7 @@ public final class Log {
     internal static func debug (_ message: Any) {
         let env = "0"
         switch env {
-        case "0": print("\(GlobalFunc.dateToStringDateFormatter(dateFormat: Constant.DF_FULL_DATE_TIME_SLICE, mDate: Date())), [VERBOSE] ~> \(message)")
+        case "0": print("\(GlobalFunc.dateToStringDateFormatter(dateFormat: ConstantKey.DF_FULL_DATE_TIME_SLICE, mDate: Date())), [VERBOSE] ~> \(message)")
         default: break
         }
     }

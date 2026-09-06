@@ -8,8 +8,7 @@
 import Foundation
 
 public struct PropertyModel: Codable {
-    public var BASE_URL_DEV: String?
-    public var BASE_URL_PROD: String?
+    public var BASE_URL: String?
     
     public var BASE_APP_URL_DEV: String?
     public var BASE_APP_URL_PROD: String?
@@ -23,8 +22,7 @@ public struct PropertyModel: Codable {
     public var APP_DEV_VERSION: String?
     public var APP_STORE_ID_DEV: String?
     public var APP_STORE_ID: String?
-    public var REALM_VERS_PROD: String?
-    public var REALM_VERS_DEV: String?
+    public var REALM_VERS: String?
     public var LOG_ENABLED: String?
     
     //MARK: Post
@@ -35,8 +33,7 @@ public struct PropertyModel: Codable {
     public var EP_CHANGE_IMAGE_GATEWAY: String?
     
     //MARK: Get
-    public var EP_VISITOR: String?
-    public var EP_PESERTA: String?
+    public var EP_SEARCH: String?
 }
 
 

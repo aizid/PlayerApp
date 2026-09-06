@@ -61,6 +61,98 @@ class GlobalFunc {
     static func REMOVE_KEYCHAIN_WRAPPER(key: String) {
         UserDefaults.standard.removeObject(forKey: key)
     }
+    
+    // ===========================================================
+    //DATE FORMATTER
+    public static func getCurrentTimeZone() -> String {
+      return TimeZone.current.identifier
+    }
+    
+    static func getCurrentDate() -> Date! {
+        let currentDate = NSDate()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        dateFormatter.timeZone = TimeZone(identifier: "id") as TimeZone?
+        let date = dateFormatter.date(from: dateFormatter.string(from: currentDate as Date))
+        return date
+    }
+    
+    static func getCurrentDate() -> String {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.locale = Locale.current
+        let dateString = dateFormatter.string(from: currentDate)
+        return dateString
+    }
+    
+    static func getDateMinusYears(yearsToSubtract: Int) -> String {
+        let calendar = Calendar.current
+        if let date = calendar.date(byAdding: .year, value: -yearsToSubtract, to: Date()) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            formatter.locale = Locale.current
+            return formatter.string(from: date)
+        } else {
+            return ""
+        }
+    }
+    
+    static func convertDateFormatType(from dateString: String, inputFormat: String) -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = inputFormat
+        inputFormatter.locale = Locale(identifier: "id_ID") // Indonesian locale
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd MMMM yyyy" // ex:01 Agustus 1990
+        outputFormatter.locale = Locale(identifier: "id_ID")
+        
+        if let date = inputFormatter.date(from: dateString) {
+            return outputFormatter.string(from: date)
+        } else {
+            return dateString // return original if parsing fails
+        }
+    }
+    
+    public static func dateToStringDateFormatter(dateFormat: String, mDate: Date, locale: String? = "en_US") -> String {
+      let dateFormatter = dateFormater(format: dateFormat, locale: locale ?? "en_US")
+      return dateFormatter.string(from: mDate)
+    }
+    
+    public static func stringToDateFormatter(dateFormat: String, date: String, locale: String? = "en_US", timeZone: TimeZone? = TimeZone(identifier: getCurrentTimeZone())!) -> Date {
+        let dateFormatter = dateFormater(format: dateFormat, locale: locale ?? "en_US", timeZone: timeZone)
+        return dateFormatter.date(from: date) ?? Date()
+    }
+    
+    public static func dateFormater(format: String? = "MMM d, h:mm a", locale: String, timeZone: TimeZone? = TimeZone(identifier: getCurrentTimeZone())!) -> DateFormatter {
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = format
+      dateFormatter.timeZone = timeZone
+      dateFormatter.locale = Locale(identifier: locale)
+      dateFormatter.amSymbol = "AM"
+      dateFormatter.pmSymbol = "PM"
+      dateFormatter.calendar = Calendar(identifier: .gregorian)
+      return dateFormatter
+    }
+    
+    static func parseErrorByPartResponse(_ response: String, needError: String) -> String {
+        let parts = response.components(separatedBy: "#")
+        let keys: [String: Int] = [
+            "errorStat": 0,
+            "status": 1,
+            "reason": 2,
+            "message": 3,
+            "titleMessage": 4,
+            "detailMessage": 5,
+            "api": 6
+        ]
+        
+        if let index = keys[needError], index < parts.count {
+            return parts[index]
+        } else {
+            return response
+        }
+    }
 }
 
 extension Bundle {

@@ -58,7 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window?.rootViewController = navigationController
         appFlowCoordinator = AppFlowCoordinator(navigationController: navigationController, appDIContainer: appDIContainer)
-        
+        appFlowCoordinator?.start()
         
         //Set netfox network debug gesture repeat tap
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openNetfox))
@@ -77,29 +77,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NFX.sharedInstance().show()
     #endif
     }
-
-    // MARK: UISceneSession Lifecycle
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-    }
-
-
 }
+
 
 // MARK: Setup Aplication
 extension AppDelegate {
     private func setupRealmConfig() {
         appDIContainer.appDelegate = self
-        let realmVersion = UInt64(ConstantProp.REALM_APP_VERS) ?? 1
+        let realmVersion = UInt64(ConstantProp.REALM_VERS) ?? 1
         let encryptedKey = GlobalFunc.getAppProperties().ENCRYPTED_KEY!
         var key = NSData(data: encryptedKey.data(using: .ascii) ?? Data())
         

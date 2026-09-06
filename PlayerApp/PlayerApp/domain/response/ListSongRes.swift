@@ -16,6 +16,7 @@ public struct SongRes: Decodable {
     let id: Int
     let trackName: String
     let artistName: String
+    let collectionName: String?
     let previewUrl: String?
     let artworkUrl100: String?
     let trackTimeMillis: Int?
@@ -24,6 +25,7 @@ public struct SongRes: Decodable {
         case id = "trackId"
         case trackName
         case artistName
+        case collectionName
         case previewUrl
         case artworkUrl100
         case trackTimeMillis

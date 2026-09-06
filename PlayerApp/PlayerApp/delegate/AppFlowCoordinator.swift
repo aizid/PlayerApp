@@ -21,7 +21,7 @@ class AppFlowCoordinator {
 
     func start() {
         let appSceneDIContainer = appDIContainer.makeAppSceneDIContainer()
-        let flow = appSceneDIContainer.makeAppFlowCoordinator(navigationController: navigationController)
+        let flow = appSceneDIContainer.makePlayerFlowCoordinator(navigationController: navigationController)
         flow.start()
     }
 }

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Y6W-OH-hqX">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--LaunchVC-->
+        <scene sceneID="s0d-6b-0kx">
+            <objects>
+                <viewController id="Y6W-OH-hqX" customClass="LaunchVC" customModule="PlayerApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc" customClass="LaunchView" customModule="PlayerApp" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u4y-Vv-ob3">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Version 0.0.1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kbe-bF-e45">
+                                        <rect key="frame" x="150.66666666666666" y="723.33333333333337" width="92" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="textColor" name="color_font"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DAPENBUN merupakan Dana Pensiun yang berizin dan diawasi oleh Otoritas Jasa Keuangan (OJK)" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2hg-VV-5FM">
+                                        <rect key="frame" x="30" y="773.33333333333337" width="333" height="28.666666666666629"/>
+                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
+                                        <color key="textColor" name="color_font"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Plays" translatesAutoresizingMaskIntoConstraints="NO" id="wIJ-Dc-LpI">
+                                        <rect key="frame" x="116.66666666666669" y="346" width="160" height="160"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="160" id="9ya-3B-kch"/>
+                                            <constraint firstAttribute="height" constant="160" id="aFL-RO-H87"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="2hg-VV-5FM" firstAttribute="top" secondItem="kbe-bF-e45" secondAttribute="bottom" constant="30" id="GZx-1M-M3N"/>
+                                    <constraint firstAttribute="trailing" secondItem="2hg-VV-5FM" secondAttribute="trailing" constant="30" id="LB1-c3-c83"/>
+                                    <constraint firstItem="wIJ-Dc-LpI" firstAttribute="centerX" secondItem="u4y-Vv-ob3" secondAttribute="centerX" id="Lof-Nt-6un"/>
+                                    <constraint firstItem="kbe-bF-e45" firstAttribute="centerX" secondItem="u4y-Vv-ob3" secondAttribute="centerX" id="LsR-Vj-lA9"/>
+                                    <constraint firstItem="wIJ-Dc-LpI" firstAttribute="centerY" secondItem="u4y-Vv-ob3" secondAttribute="centerY" id="XHY-4W-d5m"/>
+                                    <constraint firstAttribute="bottom" secondItem="2hg-VV-5FM" secondAttribute="bottom" constant="50" id="fpz-ui-yhn"/>
+                                    <constraint firstItem="2hg-VV-5FM" firstAttribute="leading" secondItem="u4y-Vv-ob3" secondAttribute="leading" constant="30" id="yAA-gZ-vye"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="u4y-Vv-ob3" secondAttribute="bottom" id="BrW-QC-mzv"/>
+                            <constraint firstItem="u4y-Vv-ob3" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="SPv-en-2Tb"/>
+                            <constraint firstItem="u4y-Vv-ob3" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="TTV-e7-D64"/>
+                            <constraint firstItem="u4y-Vv-ob3" firstAttribute="top" secondItem="5EZ-qb-Rvc" secondAttribute="top" id="kVY-hi-z4t"/>
+                        </constraints>
+                        <connections>
+                            <outlet property="lblInfo" destination="2hg-VV-5FM" id="qyi-VC-xsk"/>
+                            <outlet property="lblVersion" destination="kbe-bF-e45" id="VNK-rW-jlc"/>
+                        </connections>
+                    </view>
+                    <connections>
+                        <outlet property="launchView" destination="5EZ-qb-Rvc" id="4mm-x7-3sB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="139" y="131"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Plays" width="512" height="512"/>
+        <namedColor name="color_font">
+            <color red="0.32899999618530273" green="0.32400000095367432" blue="0.4779999852180481" alpha="0.33000001311302185" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

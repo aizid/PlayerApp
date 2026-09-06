@@ -12,6 +12,8 @@ import RxSwift
 @objc protocol BaseViewControllerDelegate: AnyObject {
     @objc optional func showLoadProgress(state: Bool)
     @objc optional func showErrorMessage(errorMessage: String)
+    
+    @objc optional func screenActiveCallback(value: Bool)
 }
 
 class BaseViewController: UIViewController {

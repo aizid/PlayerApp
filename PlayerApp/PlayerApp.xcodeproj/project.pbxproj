@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		2499D44D304C878500121C14 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D44C304C878500121C14 /* Alamofire */; };
-		2499D44F304C878500121C14 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D44E304C878500121C14 /* AlamofireDynamic */; };
 		2499D452304C87C200121C14 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D451304C87C200121C14 /* RxSwift */; };
 		2499D455304C87E100121C14 /* netfox in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D454304C87E100121C14 /* netfox */; };
 		2499D458304C883100121C14 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D457304C883100121C14 /* FirebaseAnalytics */; };
 		2499D45A304C883100121C14 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D459304C883100121C14 /* FirebaseCrashlytics */; };
 		2499D45D304C89C800121C14 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D45C304C89C800121C14 /* Kingfisher */; };
 		2499D4C8304D144100121C14 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D4C7304D144100121C14 /* RealmSwift */; };
+		2499D4F4304D55FE00121C14 /* CRRefresh in Frameworks */ = {isa = PBXBuildFile; productRef = 2499D4F3304D55FE00121C14 /* CRRefresh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,9 +81,9 @@
 				2499D45D304C89C800121C14 /* Kingfisher in Frameworks */,
 				2499D4C8304D144100121C14 /* RealmSwift in Frameworks */,
 				2499D455304C87E100121C14 /* netfox in Frameworks */,
+				2499D4F4304D55FE00121C14 /* CRRefresh in Frameworks */,
 				2499D45A304C883100121C14 /* FirebaseCrashlytics in Frameworks */,
 				2499D458304C883100121C14 /* FirebaseAnalytics in Frameworks */,
-				2499D44F304C878500121C14 /* AlamofireDynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,13 +145,13 @@
 			name = PlayerApp;
 			packageProductDependencies = (
 				2499D44C304C878500121C14 /* Alamofire */,
-				2499D44E304C878500121C14 /* AlamofireDynamic */,
 				2499D451304C87C200121C14 /* RxSwift */,
 				2499D454304C87E100121C14 /* netfox */,
 				2499D457304C883100121C14 /* FirebaseAnalytics */,
 				2499D459304C883100121C14 /* FirebaseCrashlytics */,
 				2499D45C304C89C800121C14 /* Kingfisher */,
 				2499D4C7304D144100121C14 /* RealmSwift */,
+				2499D4F3304D55FE00121C14 /* CRRefresh */,
 			);
 			productName = PlayerApp;
 			productReference = 2499D417304C872200121C14 /* PlayerApp.app */;
@@ -242,6 +242,7 @@
 				2499D456304C883100121C14 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				2499D45B304C89C800121C14 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2499D4C4304D144100121C14 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				2499D4F2304D55FE00121C14 /* XCRemoteSwiftPackageReference "CRRefresh" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2499D418304C872200121C14 /* Products */;
@@ -326,12 +327,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5KPMR3H66N;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PlayerApp/Info.plist;
+				INFOPLIST_FILE = PlayerApp/support/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PlayerApp;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -359,12 +360,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5KPMR3H66N;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PlayerApp/Info.plist;
+				INFOPLIST_FILE = PlayerApp/support/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PlayerApp;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -678,6 +679,14 @@
 				kind = branch;
 			};
 		};
+		2499D4F2304D55FE00121C14 /* XCRemoteSwiftPackageReference "CRRefresh" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cakratech/CRRefresh";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -685,11 +694,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2499D44B304C878500121C14 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		2499D44E304C878500121C14 /* AlamofireDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2499D44B304C878500121C14 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = AlamofireDynamic;
 		};
 		2499D451304C87C200121C14 /* RxSwift */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -720,6 +724,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2499D4C4304D144100121C14 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		2499D4F3304D55FE00121C14 /* CRRefresh */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2499D4F2304D55FE00121C14 /* XCRemoteSwiftPackageReference "CRRefresh" */;
+			productName = CRRefresh;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

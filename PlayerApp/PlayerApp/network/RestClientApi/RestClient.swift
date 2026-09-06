@@ -6,6 +6,7 @@
 //
 
 import Alamofire
+import Foundation
 
 public class RestClient {
     
@@ -43,8 +44,7 @@ public class RestClient {
         let versionName = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         let versionCode = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
         return [
-           "Content-Type": "application/json",
-           "Authorization": Constant.API_TYPE + GlobalFunc.GET_KEYCHAIN_WRAPPER_STRING(key: Constant.KEY_PREFF_TOKEN)
+           "Content-Type": "application/json"
        ]
     }
     

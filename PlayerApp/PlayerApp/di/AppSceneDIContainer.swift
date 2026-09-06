@@ -10,7 +10,7 @@ import UIKit
 final class AppSceneDIContainer {
     
     struct Dependencies {
-        let playerRemoteDataSource: AppRemoteDataSource
+        let appRemoteDataSource: AppRemoteDataSource
         let localDataSource: LocalDataSource
     }
     
@@ -25,6 +25,10 @@ final class AppSceneDIContainer {
     
     // MARK: - Use Cases
     
+    func makeLaunchUseCase() -> LaunchUseCase {
+        return DefaultLaunchUseCase(appRepository: makeAppRepository())
+    }
+    
     func makeMainUseCase() -> MainUseCase {
         return DefaultMainUseCase(appRepository: makeAppRepository())
     }
@@ -32,7 +36,7 @@ final class AppSceneDIContainer {
     
     // MARK: - Repositories
     func makeAppRepository() -> AppRepository {
-        return DefaultAppRepository(appRemoteDataSource: dependencies.playerRemoteDataSource, localDataSource: dependencies.localDataSource)
+        return DefaultAppRepository(appRemoteDataSource: dependencies.appRemoteDataSource, localDataSource: dependencies.localDataSource)
     }
     
     
@@ -42,7 +46,7 @@ final class AppSceneDIContainer {
     }
     
     func makeLaunchVM(closures: LaunchVMClosures) -> LaunchVM {
-        return DefaultLaunchVM(closures: closures)
+        return DefaultLaunchVM(launchUseCase: makeLaunchUseCase(), closures: closures)
     }
     
     // MARK: - Main
@@ -53,4 +57,12 @@ final class AppSceneDIContainer {
     func makeMainVM(closures: MainVMClosures) -> MainVM {
         return DefaultMainVM(mainUseCase: makeMainUseCase(), closures: closures)
     }
+    
+    // MARK: - Flow Coordinators
+    func makePlayerFlowCoordinator(navigationController: UINavigationController) -> PlayerFlowCoordinator {
+        return PlayerFlowCoordinator(navigationController: navigationController, dependencies: self)
+    }
+}
+
+extension AppSceneDIContainer: PlayerFlowCoordinatorDependencies {
 }
