@@ -18,6 +18,7 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
     var songList: [SongModel] = []
     private var currentSearchTerm: String = ""
     private var searchDebounceTimer: Timer?
+    private var isPaginating: Bool = false
     
     private let playerBarView: PlayerBarView = {
         let view = PlayerBarView()
@@ -119,12 +120,14 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
     
     private func loadInitialData() {
         currentSearchTerm = ""
-        viewModel.getTopSongs()
+        isPaginating = false
+        viewModel.getTopSongs(limit: 25, isLoadMore: false)
     }
     
     private func performSearch(term: String) {
+        isPaginating = false
         let searchParam = SearchSongParam(term: term, media: "music", entity: "song", attribute: "songTerm", limit: 25)
-        viewModel.getListSong(request: searchParam)
+        viewModel.getListSong(request: searchParam, isLoadMore: false)
     }
     
     private func registerProtocolers() {
@@ -142,31 +145,59 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] result in
                 guard let self = self else { return }
-                self.mainView.refreshStop()
                 
-                switch result {
-                case .isLoad(let state):
-                    self.showLoadProgress(isLoad: state)
-                case .Success(let model):
-                    guard let result = model else { return }
-                    if result.resultCount != 0 {
-                        self.songList.removeAll()
-                        self.songList.append(contentsOf: result.results)
-                        self.mainView.reloadTableData()
-                        self.mainView.tblListSongs.isHidden = false
-                        self.mainView.vwNoListSongs.isHidden = true
-                        
-                        if AudioPlayerService.shared.currentSong == nil {
-                            AudioPlayerService.shared.setPlaylist(self.songList, startAt: 0)
+                if self.isPaginating {
+                    self.isPaginating = false
+                    switch result {
+                    case .isLoad:
+                        break
+                    case .Success(let model):
+                        guard let result = model else {
+                            self.mainView.noticeNoMoreData()
+                            return
                         }
-                    } else {
-                        self.songList.removeAll()
-                        self.mainView.reloadTableData()
-                        self.mainView.tblListSongs.isHidden = true
-                        self.mainView.vwNoListSongs.isHidden = false
+                        let existingIds = Set(self.songList.map { $0.id })
+                        let newSongs = result.results.filter { !existingIds.contains($0.id) }
+                        if newSongs.isEmpty {
+                            self.mainView.noticeNoMoreData()
+                        } else {
+                            self.songList.append(contentsOf: newSongs)
+                            self.mainView.reloadTableData()
+                            self.mainView.endLoadingMore()
+                            AudioPlayerService.shared.appendPlaylist(newSongs)
+                        }
+                    case .Error(let error):
+                        self.mainView.endLoadingMore()
+                        self.erroHandler(self, error: error)
                     }
-                case .Error(let error):
-                    self.erroHandler(self, error: error)
+                } else {
+                    self.mainView.refreshStop()
+                    
+                    switch result {
+                    case .isLoad(let state):
+                        self.showLoadProgress(isLoad: state)
+                    case .Success(let model):
+                        self.mainView.resetNoMoreData()
+                        guard let result = model else { return }
+                        if result.resultCount != 0 {
+                            self.songList.removeAll()
+                            self.songList.append(contentsOf: result.results)
+                            self.mainView.reloadTableData()
+                            self.mainView.tblListSongs.isHidden = false
+                            self.mainView.vwNoListSongs.isHidden = true
+                            
+                            if AudioPlayerService.shared.currentSong == nil {
+                                AudioPlayerService.shared.setPlaylist(self.songList, startAt: 0)
+                            }
+                        } else {
+                            self.songList.removeAll()
+                            self.mainView.reloadTableData()
+                            self.mainView.tblListSongs.isHidden = true
+                            self.mainView.vwNoListSongs.isHidden = false
+                        }
+                    case .Error(let error):
+                        self.erroHandler(self, error: error)
+                    }
                 }
             })
             .disposed(by: viewModel.disposeBag)
@@ -176,10 +207,37 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
 // MARK: - Delegate View
 extension MainVC: MainViewDelegate {
     func RefreshLoad() {
+        isPaginating = false
         if currentSearchTerm.isEmpty {
-            viewModel.getTopSongs()
+            viewModel.getTopSongs(limit: 25, isLoadMore: false)
         } else {
             performSearch(term: currentSearchTerm)
+        }
+    }
+    
+    func LoadMore() {
+        guard !isPaginating else { return }
+        isPaginating = true
+        
+        if currentSearchTerm.isEmpty {
+            let currentCount = songList.count
+            if currentCount >= 100 {
+                mainView.noticeNoMoreData()
+                isPaginating = false
+                return
+            }
+            let nextLimit = min(100, currentCount + 25)
+            viewModel.getTopSongs(limit: nextLimit, isLoadMore: true)
+        } else {
+            let currentCount = songList.count
+            if currentCount >= 200 {
+                mainView.noticeNoMoreData()
+                isPaginating = false
+                return
+            }
+            let nextLimit = currentCount + 25
+            let searchParam = SearchSongParam(term: currentSearchTerm, media: "music", entity: "song", attribute: "songTerm", limit: nextLimit)
+            viewModel.getListSong(request: searchParam, isLoadMore: true)
         }
     }
     
@@ -264,7 +322,7 @@ extension MainVC: UITextFieldDelegate {
             let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             self.currentSearchTerm = text
             if text.isEmpty {
-                self.viewModel.getTopSongs()
+                self.loadInitialData()
             } else {
                 self.performSearch(term: text)
             }
@@ -277,7 +335,7 @@ extension MainVC: UITextFieldDelegate {
         let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         currentSearchTerm = text
         if text.isEmpty {
-            viewModel.getTopSongs()
+            loadInitialData()
         } else {
             performSearch(term: text)
         }
@@ -286,8 +344,7 @@ extension MainVC: UITextFieldDelegate {
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         searchDebounceTimer?.invalidate()
-        currentSearchTerm = ""
-        viewModel.getTopSongs()
+        loadInitialData()
         return true
     }
 }

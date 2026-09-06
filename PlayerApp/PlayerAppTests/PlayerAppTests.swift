@@ -158,5 +158,19 @@ struct PlayerAppTests {
     @Test func testEndpointConstValues() {
         #expect(EndpointConst.getListSong.rawValue == "search")
         #expect(EndpointConst.getTopSongs.rawValue.contains("topsongs"))
+        #expect(EndpointConst.getTopSongsWithLimit(limit: 50).rawValue.contains("limit=50"))
+    }
+    
+    @Test @MainActor func testAudioPlayerAppendPlaylist() {
+        let service = AudioPlayerService.shared
+        let song1 = SongModel(id: 101, trackName: "Song 101", artistName: "Artist", collectionName: "Album", previewUrl: "https://example.com/101.m4a", artworkUrl100: "", trackTimeMillis: 30000)
+        let song2 = SongModel(id: 102, trackName: "Song 102", artistName: "Artist", collectionName: "Album", previewUrl: "https://example.com/102.m4a", artworkUrl100: "", trackTimeMillis: 30000)
+        
+        service.setPlaylist([song1], startAt: 0)
+        #expect(service.playlist.count == 1)
+        
+        service.appendPlaylist([song2])
+        #expect(service.playlist.count == 2)
+        #expect(service.playlist[1].id == 102)
     }
 }

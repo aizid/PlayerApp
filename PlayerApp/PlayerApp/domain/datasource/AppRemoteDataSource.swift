@@ -28,8 +28,8 @@ extension AppRemoteDataSource {
         return APIService().obseverRequest(urlRoute: APIRouter.getListSong(param: param), objectResponse: ListSongRes.self)
     }
     
-    public func getTopSongs() -> Observable<TopSongFeedRes> {
-        return APIService().obseverRequest(urlRoute: APIRouter.getTopSongs, objectResponse: TopSongFeedRes.self)
+    public func getTopSongs(limit: Int = 25) -> Observable<TopSongFeedRes> {
+        return APIService().obseverRequest(urlRoute: APIRouter.getTopSongsWithLimit(limit: limit), objectResponse: TopSongFeedRes.self)
     }
 }
 

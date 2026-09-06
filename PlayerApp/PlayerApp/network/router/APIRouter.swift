@@ -11,12 +11,13 @@ import Alamofire
 public enum APIRouter: URLRequestConvertible {
     case getListSong(param: Parameters?)
     case getTopSongs
+    case getTopSongsWithLimit(limit: Int)
 }
 
 extension APIRouter {
     var method: HTTPMethod {
         switch self {
-        case .getListSong, .getTopSongs:
+        case .getListSong, .getTopSongs, .getTopSongsWithLimit:
             return .get
         }
     }
@@ -27,6 +28,7 @@ extension APIRouter {
         switch self {
         case .getListSong: return EndpointConst.getListSong.rawValue
         case .getTopSongs: return EndpointConst.getTopSongs.rawValue
+        case .getTopSongsWithLimit(let limit): return EndpointConst.getTopSongsWithLimit(limit: limit).rawValue
         }
     }
 }
@@ -40,7 +42,7 @@ extension APIRouter {
     switch self {
     case .getListSong(let param):
         mParameters = param
-    case .getTopSongs:
+    case .getTopSongs, .getTopSongsWithLimit:
         mParameters = nil
     }
     

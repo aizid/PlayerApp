@@ -12,8 +12,17 @@ struct MainVMClosures {
 }
 
 protocol MainVMInput {
-    func getListSong(request: SearchSongParam)
-    func getTopSongs()
+    func getListSong(request: SearchSongParam, isLoadMore: Bool)
+    func getTopSongs(limit: Int, isLoadMore: Bool)
+}
+
+extension MainVMInput {
+    func getListSong(request: SearchSongParam) {
+        getListSong(request: request, isLoadMore: false)
+    }
+    func getTopSongs() {
+        getTopSongs(limit: 25, isLoadMore: false)
+    }
 }
 
 protocol MainVMOutput {
@@ -48,48 +57,64 @@ final class DefaultMainVM: MainVM {
 // MARK: - INPUT. View event methods
 extension DefaultMainVM {
     
-    func getListSong(request: SearchSongParam) {
+    func getListSong(request: SearchSongParam, isLoadMore: Bool = false) {
         if isInternetAvailable() {
-            self.getListSongResponse.onNext(.isLoad(true))
+            if !isLoadMore {
+                self.getListSongResponse.onNext(.isLoad(true))
+            }
             
             mainUseCase.getListSong(request: request)?
                 .observe(on:MainScheduler.instance)
                 .subscribe(
                     onNext: { result in
                         self.getListSongResponse.onNext(.Success(result))
-                        self.getListSongResponse.onNext(.isLoad(false))
+                        if !isLoadMore {
+                            self.getListSongResponse.onNext(.isLoad(false))
+                        }
                     },
                     onError: { errorResponse in
                         let message = GlobalFunc.parseErrorByPartResponse(errorResponse.localizedDescription, needError: "message")
-                        self.getListSongResponse.onNext(.isLoad(false))
+                        if !isLoadMore {
+                            self.getListSongResponse.onNext(.isLoad(false))
+                        }
                         self.getListSongResponse.onNext(.Error(message.isEmpty ? errorResponse.localizedDescription : message))
                     })
                 .disposed(by: disposeBag)
         } else {
-            self.getListSongResponse.onNext(.isLoad(false))
+            if !isLoadMore {
+                self.getListSongResponse.onNext(.isLoad(false))
+            }
             self.getListSongResponse.onNext(.Error("No internet connection. Please check your network and try again."))
         }
     }
     
-    func getTopSongs() {
+    func getTopSongs(limit: Int = 25, isLoadMore: Bool = false) {
         if isInternetAvailable() {
-            self.getListSongResponse.onNext(.isLoad(true))
+            if !isLoadMore {
+                self.getListSongResponse.onNext(.isLoad(true))
+            }
             
-            mainUseCase.getTopSongs()?
+            mainUseCase.getTopSongs(limit: limit)?
                 .observe(on: MainScheduler.instance)
                 .subscribe(
                     onNext: { result in
                         self.getListSongResponse.onNext(.Success(result))
-                        self.getListSongResponse.onNext(.isLoad(false))
+                        if !isLoadMore {
+                            self.getListSongResponse.onNext(.isLoad(false))
+                        }
                     },
                     onError: { errorResponse in
                         let message = GlobalFunc.parseErrorByPartResponse(errorResponse.localizedDescription, needError: "message")
-                        self.getListSongResponse.onNext(.isLoad(false))
+                        if !isLoadMore {
+                            self.getListSongResponse.onNext(.isLoad(false))
+                        }
                         self.getListSongResponse.onNext(.Error(message.isEmpty ? errorResponse.localizedDescription : message))
                     })
                 .disposed(by: disposeBag)
         } else {
-            self.getListSongResponse.onNext(.isLoad(false))
+            if !isLoadMore {
+                self.getListSongResponse.onNext(.isLoad(false))
+            }
             self.getListSongResponse.onNext(.Error("No internet connection. Please check your network and try again."))
         }
     }

@@ -9,7 +9,13 @@ import RxSwift
 
 protocol MainUseCase {
     func getListSong(request: SearchSongParam) -> Observable<ListSongModel>?
-    func getTopSongs() -> Observable<ListSongModel>?
+    func getTopSongs(limit: Int) -> Observable<ListSongModel>?
+}
+
+extension MainUseCase {
+    func getTopSongs() -> Observable<ListSongModel>? {
+        return getTopSongs(limit: 25)
+    }
 }
 
 final class DefaultMainUseCase: MainUseCase {
@@ -24,8 +30,8 @@ final class DefaultMainUseCase: MainUseCase {
         return appRepository.getListSong(request: request)
     }
 
-    func getTopSongs() -> Observable<ListSongModel>? {
-        return appRepository.getTopSongs()
+    func getTopSongs(limit: Int) -> Observable<ListSongModel>? {
+        return appRepository.getTopSongs(limit: limit)
     }
 
 }

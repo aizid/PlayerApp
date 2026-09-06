@@ -13,5 +13,12 @@ protocol AppRepository {
     func getListSong(request: SearchSongParam) -> Observable<ListSongModel>?
     
     @discardableResult
-    func getTopSongs() -> Observable<ListSongModel>?
+    func getTopSongs(limit: Int) -> Observable<ListSongModel>?
+}
+
+extension AppRepository {
+    @discardableResult
+    func getTopSongs() -> Observable<ListSongModel>? {
+        return getTopSongs(limit: 25)
+    }
 }

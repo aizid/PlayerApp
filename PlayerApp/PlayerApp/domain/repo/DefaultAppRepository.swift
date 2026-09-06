@@ -38,8 +38,8 @@ extension DefaultAppRepository: AppRepository {
         }
     }
     
-    func getTopSongs() -> Observable<ListSongModel>? {
-        return appRemoteDataSource.getTopSongs().map {
+    func getTopSongs(limit: Int) -> Observable<ListSongModel>? {
+        return appRemoteDataSource.getTopSongs(limit: limit).map {
             GeneralMapper.transTopSongFeedResToModel(response: $0)
         }
     }

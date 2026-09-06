@@ -15,6 +15,7 @@ protocol MainViewDelegate: AnyObject {
     func MainView(_ view: MainView, _ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     
     func RefreshLoad()
+    func LoadMore()
 }
 
 protocol MainViewDataSource: AnyObject {
@@ -38,6 +39,7 @@ class MainView: UIView {
     
     @IBOutlet weak var tblListSongs: UITableView!
     @IBOutlet weak var vwSearch: UIView!
+    @IBOutlet weak var ivSearch: UIImageView!
     @IBOutlet weak var tfSearch: UITextField!
     @IBOutlet weak var vwNoListSongs: UIView!
     @IBOutlet weak var scrlView: UIScrollView!
@@ -57,10 +59,23 @@ class MainView: UIView {
     func refreshStop() {
         tblListSongs.cr.endHeaderRefresh()
         scrlView.cr.endHeaderRefresh()
+        tblListSongs.cr.resetNoMore()
     }
     
     func refreshStart() {
         tblListSongs.cr.beginHeaderRefresh()
+    }
+    
+    func endLoadingMore() {
+        tblListSongs.cr.endLoadingMore()
+    }
+    
+    func noticeNoMoreData() {
+        tblListSongs.cr.noticeNoMoreData()
+    }
+    
+    func resetNoMoreData() {
+        tblListSongs.cr.resetNoMore()
     }
 }
 
@@ -70,12 +85,18 @@ extension MainView {
         registerCell()
         registerListener()
         
+        ivSearch?.image = UIImage(systemName: "magnifyingglass") ?? UIImage(named: "search")?.withRenderingMode(.alwaysTemplate)
+        ivSearch?.tintColor = .secondaryLabel
         
         tfSearch.placeholder = "Search songs, artists, or albums..."
         vwSearch.setSquaredTextCustom(radius: 8, brdrColor: "borderLine", bgColor: "bg_white")
         
         tblListSongs.cr.addHeadRefresh(animator: NormalHeaderAnimator()) { [weak self] in
             self?.actionRefreshListener()
+        }
+        
+        tblListSongs.cr.addFootRefresh(animator: NormalFooterAnimator()) { [weak self] in
+            self?.actionLoadMoreListener()
         }
         
         scrlView.cr.addHeadRefresh(animator: NormalHeaderAnimator()) { [weak self] in
@@ -135,5 +156,9 @@ extension MainView: UITableViewDataSource {
 extension MainView {
     @objc private func actionRefreshListener() {
         delegate?.RefreshLoad()
+    }
+    
+    @objc private func actionLoadMoreListener() {
+        delegate?.LoadMore()
     }
 }

@@ -70,6 +70,10 @@ public final class AudioPlayerService: NSObject {
         }
     }
     
+    public func appendPlaylist(_ songs: [SongModel]) {
+        self.playlist.append(contentsOf: songs)
+    }
+    
     // MARK: - Playback Controls
     
     public func playSong(at index: Int) {

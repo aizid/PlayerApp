@@ -36,6 +36,7 @@
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search" translatesAutoresizingMaskIntoConstraints="NO" id="YjB-7G-kW5">
                                                         <rect key="frame" x="12" y="4" width="24" height="24"/>
+                                                        <color key="tintColor" systemColor="secondaryLabelColor"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="24" id="6fZ-TQ-lLH"/>
                                                             <constraint firstAttribute="width" constant="24" id="bmI-2e-GEq"/>
@@ -177,6 +178,7 @@
                             <constraint firstItem="DrH-US-tf8" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="s9P-PQ-4oP"/>
                         </constraints>
                         <connections>
+                            <outlet property="ivSearch" destination="YjB-7G-kW5" id="s01-ivSearch-outlet"/>
                             <outlet property="scrlView" destination="WPc-YI-TsJ" id="WKq-2J-IKk"/>
                             <outlet property="tblListSongs" destination="8RT-el-VNA" id="qV9-rd-Gs5"/>
                             <outlet property="tfSearch" destination="ZkI-x8-Scb" id="1er-PX-fCx"/>
