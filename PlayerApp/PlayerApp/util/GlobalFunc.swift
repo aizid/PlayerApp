@@ -4,7 +4,7 @@
 //
 //  Created by IOS-Cakra on 06/09/26.
 //
-
+import UIKit
 import Foundation
 
 class GlobalFunc {
@@ -235,6 +235,18 @@ extension GlobalFunc {
             Log.debug(error.localizedDescription)
             return Data()
         }
+    }
+}
+
+//Extension UIView
+extension UIView {
+    
+    func setSquaredTextCustom(radius: Int, brdrColor: String, bgColor: String){
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor.init(named: brdrColor)?.cgColor
+        self.layer.backgroundColor = UIColor.init(named: bgColor)?.cgColor
+        self.layer.cornerRadius = CGFloat(radius)
+        self.layoutIfNeeded()
     }
 }
 

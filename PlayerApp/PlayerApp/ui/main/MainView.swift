@@ -21,6 +21,13 @@ protocol MainViewDataSource: AnyObject {
     // Tabel
     func MainView(_ tableView: UITableView, view: MainView, numberOfRowsInSection section: Int) -> Int
     func MainView(_ view: MainView, cellForRowAt indexPath: IndexPath) -> SongItemInterface
+    func MainView(_ view: MainView, isCurrentPlayingAt indexPath: IndexPath) -> (isCurrent: Bool, isPlaying: Bool)
+}
+
+extension MainViewDataSource {
+    func MainView(_ view: MainView, isCurrentPlayingAt indexPath: IndexPath) -> (isCurrent: Bool, isPlaying: Bool) {
+        return (false, false)
+    }
 }
 
 class MainView: UIView {
@@ -58,6 +65,10 @@ extension MainView {
         setupLayoutConstraint()
         registerCell()
         registerListener()
+        
+        
+        tfSearch.placeholder = "Search songs, artists, or albums..."
+        vwSearch.setSquaredTextCustom(radius: 8, brdrColor: "borderLine", bgColor: "bg_white")
         
         tblListSongs.cr.addHeadRefresh(animator: NormalHeaderAnimator()) { [weak self] in
             self?.actionRefreshListener()
@@ -106,6 +117,9 @@ extension MainView: UITableViewDataSource {
         else { return UITableViewCell() }
         
         cell.interface = dataSource?.MainView(self, cellForRowAt: indexPath)
+        if let playingInfo = dataSource?.MainView(self, isCurrentPlayingAt: indexPath) {
+            cell.setPlayingState(isCurrent: playingInfo.isCurrent, isPlaying: playingInfo.isPlaying)
+        }
         return cell
     }
 }

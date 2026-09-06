@@ -11,7 +11,7 @@ public struct SearchSongParam {
     var media: String
     var entity: String
     var attribute: String
-    var limit: String
+    var limit: Int
     
     // to Dictionary
     var asDictionary: [String: Any] {
@@ -29,14 +29,14 @@ public struct SearchSongParam {
         self.media = ""
         self.entity = ""
         self.attribute = ""
-        self.limit = ""
+        self.limit = 0
     }
     
     init(term: String,
          media: String,
          entity: String,
          attribute: String,
-         limit: String) {
+         limit: Int) {
         self.term = term
         self.media = media
         self.entity = entity

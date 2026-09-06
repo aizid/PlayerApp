@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 protocol SongViewCellInterface {
     var id: Int {get}
@@ -28,12 +29,14 @@ class SongViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        ivArtWork.layer.cornerRadius = 8
+        ivArtWork.clipsToBounds = true
+        ivArtWork.backgroundColor = .systemGray6
+        ivIconPlay.tintColor = .systemBlue
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        // Configure the view for the selected state
     }
     
     var interface: SongViewCellInterface? {
@@ -42,7 +45,25 @@ class SongViewCell: UITableViewCell {
                 lblTitle.text = interface.trackName
                 lblArtist.text = interface.artistName
                 lblAlbum.text = interface.collectionName
+                
+                if let url = URL(string: interface.artworkUrl100), !interface.artworkUrl100.isEmpty {
+                    ivArtWork.kf.setImage(with: url, placeholder: UIImage(named: "Plays"))
+                } else {
+                    ivArtWork.image = UIImage(named: "Plays")
+                }
             }
+        }
+    }
+    
+    func setPlayingState(isCurrent: Bool, isPlaying: Bool) {
+        if isCurrent {
+            ivIconPlay.isHidden = false
+            let iconName = isPlaying ? "waveform.circle.fill" : "pause.circle.fill"
+            ivIconPlay.image = UIImage(systemName: iconName)
+            contentView.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.06)
+        } else {
+            ivIconPlay.isHidden = true
+            contentView.backgroundColor = .clear
         }
     }
 }
