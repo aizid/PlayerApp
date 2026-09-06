@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import RxSwift
-import IQKeyboardManagerSwift
 
 @objc protocol BaseViewControllerDelegate: AnyObject {
     @objc optional func showLoadProgress(state: Bool)

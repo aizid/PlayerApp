@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   Property List.plist
-   PlayerApp
-
-   Created by IOS-Cakra on 06/09/26.
-   Copyright (c) 2026 ___ORGANIZATIONNAME___. All rights reserved.
--->
 <plist version="1.0">
-<dict/>
+<dict>
+	<key>BASE_URL</key>
+	<string>https://itunes.apple.com/</string>
+	<key>REALM_VERS</key>
+	<string>1</string>
+	<key>ENCRYPTED_KEY</key>
+	<string>Pl4Y3rApPl1c4T10N</string>
+</dict>
 </plist>

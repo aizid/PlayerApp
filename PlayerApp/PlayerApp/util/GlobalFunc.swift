@@ -1,0 +1,148 @@
+//
+//  GlobalFunc.swift
+//  PlayerApp
+//
+//  Created by IOS-Cakra on 06/09/26.
+//
+
+import Foundation
+
+class GlobalFunc {
+    
+    // REGULAR EXPRESSION
+    // ===========================================================
+    static func MATCH(value: String, pattern: String) -> Bool{
+        let range = value.range(of: pattern, options: .regularExpression)
+        if range == nil {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    // KEY CHAIN WRAPPER
+    // ===========================================================
+    static func GET_KEYCHAIN_WRAPPER_STRING(key: String) -> String{
+        let retriveData: String? = UserDefaults.standard.string(forKey: key)
+        return retriveData ?? ""
+    }
+    
+    static func SET_KEYCHAIN_WRAPPER_STRING(key: String, value: String) {
+        UserDefaults.standard.set(value, forKey: key)
+    }
+    
+    static func GET_KEYCHAIN_WRAPPER_INT(key: String) -> Int{
+        let retriveData: Int? = UserDefaults.standard.integer(forKey: key)
+        return retriveData ?? 0
+    }
+    
+    static func GET_KEYCHAIN_WRAPPER_INT64(key: String) -> Int64{
+        let retriveData: Int? = UserDefaults.standard.integer(forKey: key)
+        return Int64(retriveData ?? 0)
+    }
+    
+    static func SET_KEYCHAIN_WRAPPER_INT(key: String, value: Int) {
+        UserDefaults.standard.set(value, forKey: key)
+    }
+    
+    static func SET_KEYCHAIN_WRAPPER_INT64(key: String, value: Int64) {
+        UserDefaults.standard.set(value, forKey: key)
+    }
+    
+    static func GET_KEYCHAIN_WRAPPER_BOOLEAN(key: String) -> Bool{
+        let retriveData: Bool? = UserDefaults.standard.bool(forKey: key)
+        return retriveData ?? false
+    }
+    
+    static func SET_KEYCHAIN_WRAPPER_BOOLEAN(key: String, value: Bool) {
+        UserDefaults.standard.set(value, forKey: key)
+    }
+    
+    static func REMOVE_KEYCHAIN_WRAPPER(key: String) {
+        UserDefaults.standard.removeObject(forKey: key)
+    }
+}
+
+extension Bundle {
+    var appVersion: String {
+        infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+    }
+
+    var buildNumber: String {
+        infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+    }
+
+    var ShowAppVersion: String {
+        "\(appVersion)"
+    }
+    
+    var ShowBuildNumber: String {
+        "\(buildNumber)"
+    }
+}
+
+extension GlobalFunc {
+    // MARK: Version Build Bundle
+    // ===========================================================
+    //1
+    static var appVersionBundle: String {
+        guard
+            let info = Bundle.main.infoDictionary,
+            let version = info["CFBundleShortVersionString"] as? String
+            else { return "" }
+        return version
+    }
+
+    //2
+    static var appBuildBundle: String {
+        guard
+            let info = Bundle.main.infoDictionary,
+            let version = info["CFBundleVersion"] as? String
+            else { return "" }
+        return version
+    }
+    
+    // MARK: App property Accessor
+    // ===========================================================
+    public static func getAppProperties() -> PropertyModel {
+        print(getProperties(propertiesName: "AppProperty", mode: PropertyModel.self))
+        if let appProperties = getProperties(propertiesName: "AppProperty", mode: PropertyModel.self) {
+            return appProperties
+        }
+        return PropertyModel()
+    }
+    
+    public static func getAppEndpoint() -> PropertyModel {
+        print(getProperties(propertiesName: "AppEndpoint", mode: PropertyModel.self))
+        if let appEndpoint = getProperties(propertiesName: "AppEndpoint", mode: PropertyModel.self) {
+            return appEndpoint
+        }
+        return PropertyModel()
+    }
+    
+    public static func getProperties<D: Decodable>(propertiesName: String, mode: D.Type) -> D? {
+        if let bundle      = Bundle.main.bundleIdentifier,
+           let path        = Bundle.main.path(forResource: propertiesName, ofType: "plist"),
+           let xml         = FileManager.default.contents(atPath: path),
+           let preferences = try? PropertyListDecoder().decode(D.self, from: xml) {
+            return preferences
+        }
+        return nil
+    }
+    
+    // MARK: JSON Serialization
+    // ===========================================================
+    public static func rawJson (body: [String: Any]) -> Data {
+        let mBody = body as NSDictionary
+        do {
+            let data = try JSONSerialization.data(withJSONObject: mBody, options: .prettyPrinted)
+            let json = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
+            if let json = json { Log.debug(json) }
+            return data
+        } catch let error {
+            Log.debug(error.localizedDescription)
+            return Data()
+        }
+    }
+}
+

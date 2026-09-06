@@ -9,21 +9,14 @@ import Foundation
 import Alamofire
 
 public enum APIRouter: URLRequestConvertible {
-    case getPesertaByNik(nik: String)
+    case getListSong(param: Parameters?)
 }
 
 extension APIRouter {
     var method: HTTPMethod {
         switch self {
-        case
-            : return .post
-            
-        case
-            : return .put
-            
-        case .getPesertaByNik,
+        case .getListSong
             : return .get
-            
         }
     }
 }
@@ -31,11 +24,7 @@ extension APIRouter {
 extension APIRouter {
     var endpoint: String {
         switch self {
-        case .postLogin: return EndpointConst.postLogin.rawValue
-            
-        case .putImageGateway: return EndpointConst.putImageGateway.rawValue
-            
-        case .getPesertaByNik(let nik): return EndpointConst.getPesertaByNik(nik: nik).rawValue
+        case .getListSong: return EndpointConst.getListSong.rawValue
         }
     }
 }
@@ -43,19 +32,15 @@ extension APIRouter {
 extension APIRouter {
   public func asURLRequest() throws -> URLRequest {
     guard let URL_BASE = URL(string: ConstantProp.BASE_URL) else { fatalError("")}
-    guard let URL_DAPENBUN_BASE = URL(string: ConstantProp.BASE_URL_DAPEN) else { fatalError("")}
     var URL = URL_BASE.appendingPathComponent(self.endpoint)
     switch self {
-    case .getNews: URL = URL_DAPENBUN_BASE.appendingPathComponent(self.endpoint)
+    case .getNews: URL = URL_BASE.appendingPathComponent(self.endpoint)
     default: break
     }
     var mBody: Data?
     var mParameters: Parameters?
     switch self {
-    case .postLogin(let body)
-        : mBody = body
-      
-    case .getPrivacyPolicy(let param)
+    case .getListSong(let param)
         : mParameters = param
       
     default: break

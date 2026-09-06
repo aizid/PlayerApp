@@ -32,26 +32,16 @@ public final class ConstantProp {
     public static let G_ISSUER = "https://accounts.google.com"
     
     public static var appStoreId: String {
-        return GlobalFunc.getProperties().APP_STORE_ID!
+        return GlobalFunc.getAppProperties().APP_STORE_ID!
     }
     
     public static var BASE_URL: String {
-        switch BuildConfiguration.shared.environment {
-        case .Dev:
-            return GlobalFunc.getProperties().BASE_URL_DEV!
-        case .Prod:
-            return GlobalFunc.getProperties().BASE_URL_PROD!
-        }
+        return GlobalFunc.getAppProperties().BASE_URL!
     }
     
-//    public static var REALM_VERS: String {
-//        switch BuildConfiguration.shared.environment {
-//        case .Dev:
-//            return GlobalFunc.getProperties().REALM_VERS_DEV!
-//        case .Prod:
-//            return GlobalFunc.getProperties().REALM_VERS_PROD!
-//        }
-//    }
+    public static var REALM_VERS: String {
+        return GlobalFunc.getAppProperties().REALM_VERS!
+    }
 }
 
 public enum ConstantRpc {

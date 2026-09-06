@@ -20,8 +20,8 @@ class AppFlowCoordinator {
     }
 
     func start() {
-        let dapenBunSceneDIContainer = appDIContainer.makeDapenbunSceneDIContainer()
-        let flow = dapenBunSceneDIContainer.makeDapenbunFlowCoordinator(navigationController: navigationController)
+        let appSceneDIContainer = appDIContainer.makeAppSceneDIContainer()
+        let flow = appSceneDIContainer.makeAppFlowCoordinator(navigationController: navigationController)
         flow.start()
     }
 }

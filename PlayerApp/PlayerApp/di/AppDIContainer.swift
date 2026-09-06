@@ -4,54 +4,24 @@
 //
 //  Created by IOS-Cakra on 06/09/26.
 //
-
 import Foundation
-import UIKit
 
-final class PlayerSceneDIContainer {
+final class AppDIContainer {
     
-    struct Dependencies {
-        let playerRemoteDataSource: PlayerRemoteDataSource
-        let localDataSource: LocalDataSource
-    }
+    lazy var appConfiguration = AppConfiguration()
+    var appDelegate: AppDelegate?
     
-    private let dependencies: Dependencies
-    private let appDelegate: AppDelegate?
+    // MARK: - Network
+    lazy var appRemoteDataSource: AppRemoteDataSource = {
+        return AppRemoteDataSource()
+    }()
+    lazy var localDataSource: LocalDataSource = {
+        return LocalDataSource(realm: appDelegate?.realm)
+    }()
     
-    init(dependencies: Dependencies, appDelegate: AppDelegate?) {
-        self.dependencies = dependencies
-        self.appDelegate = appDelegate
-    }
-    
-    
-    // MARK: - Use Cases
-    
-    func makeMainUseCase() -> MainUseCase {
-        return DefaultmainUseCase(dapenBunRepository: makeDapenbunRepository())
-    }
-    
-    
-    // MARK: - Repositories
-    func makePlayerRepository() -> PlayerRepository {
-        return DefaultPlayerRepository(playerRemoteDataSource: dependencies.playerRemoteDataSource, localDataSource: dependencies.localDataSource)
-    }
-    
-    
-    // MARK: - Launch
-    func makeLaunchVC(closures: LaunchVMClosures) -> LaunchVC {
-        return LaunchVC.create(with: makeLaunchVM(closures: closures))
-    }
-    
-    func makeLaunchVM(closures: LaunchVMClosures) -> LaunchVM {
-        return DefaultLaunchVM(closures: closures)
-    }
-    
-    // MARK: - Main
-    func makeMainVC(closures: MainVMClosures) -> MainVC {
-        return MainVC.create(with: makeMainVM(closures: closures))
-    }
-    
-    func makeMainVM(closures: MainVMClosures) -> MainVM {
-        return DefaultMainVM(mainUseCase: makeMainUseCase(), closures: closures)
+    // MARK: - DIContainers of scenes
+    func makeAppSceneDIContainer() -> AppSceneDIContainer {
+        let dependencies = AppSceneDIContainer.Dependencies(appRemoteDataSource: appRemoteDataSource, localDataSource: localDataSource)
+        return AppSceneDIContainer(dependencies: dependencies, appDelegate: appDelegate)
     }
 }
