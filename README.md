@@ -16,6 +16,8 @@ A native iOS music player application that streams music previews from the publi
 - [Tech Stack & Dependencies](#-tech-stack--dependencies)
 - [Project Structure](#-project-structure)
 - [Error Handling & Loading Handler](#-error-handling--loading-handler)
+- [Pagination with CRRefresh](#-pagination-with-crrefresh)
+- [Firebase App Distribution & Local Deployment](#-firebase-app-distribution--local-deployment)
 - [Getting Started](#-getting-started)
 - [Running Unit Tests](#-running-unit-tests)
 - [CI/CD Pipelines](#-cicd-pipelines)
@@ -27,15 +29,19 @@ A native iOS music player application that streams music previews from the publi
 
 | Requirement | Implementation Details | Status |
 | :--- | :--- | :---: |
-| **Top Trending & Song List** | Initial data fetch retrieves the official **Top 50 Trending Songs** from Apple Music RSS; dynamic live search queries `https://itunes.apple.com/search?term={query}` with a 500ms debounce. | ✅ Implemented |
+| **Top Trending & Song List** | Initial data fetch retrieves the official **Top 25 Trending Songs** from Apple Music RSS; dynamic live search queries `https://itunes.apple.com/search?term={query}` with a 500ms debounce. | ✅ Implemented |
+| **Pagination with CRRefresh** | Pull-up footer refresh (`NormalFooterAnimator`) paginating Top Songs (up to 100) and Search Results (up to 200) with automatic playlist queue expansion. | ✅ Implemented |
 | **Play Songs** | Native audio streaming using `AVPlayer` wrapped in a centralized `AudioPlayerService` configured with `AVAudioSessionCategoryPlayback`. | ✅ Implemented |
 | **Pause Song** | Responsive play/pause state synchronization between the docked floating player bar and active table cell. | ✅ Implemented |
 | **Play Next Song** | Next button (`forward.fill`) smoothly advances the playlist queue with boundary protection. | ✅ Implemented |
 | **Play Previous Song** | Previous button (`backward.fill`) rewinds to previous track or restarts the track if past 3 seconds. | ✅ Implemented |
 | **Control Song with Slider** | Interactive `UISlider` scrubbing with periodic time observation (100ms interval) displaying elapsed and total time (`mm:ss`). | ✅ Implemented |
 | **Auto-Play Next Song** | Automatically transitions to the next track upon receiving `AVPlayerItemDidPlayToEndTimeNotification`. | ✅ Implemented |
+| **Dismissible Player Bar** | Top-right close button (`xmark.circle.fill`) pauses audio and smoothly animates the floating player bar down out of view. | ✅ Implemented |
+| **Search Bar Icon** | Native vector SF Symbol `magnifyingglass` and template image asset with dynamic `secondaryLabel` tinting in `vwSearch`. | ✅ Implemented |
 | **Loading Handler** | Centralized HUD loading overlay with `UIActivityIndicatorView` during API requests and track buffering. | ✅ Implemented |
 | **Error Handler** | Robust network connectivity verification (`isInternetAvailable`) and friendly user alerts on API/decoding failures. | ✅ Implemented |
+| **Firebase App Distribution** | Automated local build, `.xcarchive` generation, `.ipa` export, and distribution script (`scripts/deploy_firebase.sh`). | ✅ Implemented |
 
 ---
 
@@ -106,6 +112,9 @@ PlayerApp/
 │   └── workflows/
 │       └── ci.yml                 # GitHub Actions CI/CD Pipeline
 ├── .gitlab-ci.yml                 # GitLab CI/CD Pipeline
+├── ExportOptions.plist            # Xcode export options for IPA signing
+├── scripts/
+│   └── deploy_firebase.sh        # Automated local build & Firebase distribution
 ├── PlayerApp/
 │   ├── PlayerApp/
 │   │   ├── domain/
@@ -156,7 +165,55 @@ Before executing requests, network availability is verified:
 
 ---
 
-## 🚀 Getting Started
+## 🔄 Pagination with CRRefresh
+
+The table view implements seamless infinite scrolling powered by **CRRefresh**:
+- **Footer Pull-to-Refresh**: Configured via `tblListSongs.cr.addFootRefresh(animator: NormalFooterAnimator())`.
+- **Top Trending Songs**: Initial page loads 25 songs; pull-up paginates in batches of 25 up to 100 tracks.
+- **Search Results**: Paginates dynamically in increments of 25 up to 200 tracks with duplicate filtering (`Set<id>`).
+- **Dynamic Playlist Expansion**: Newly loaded tracks are automatically appended to `AudioPlayerService.shared.appendPlaylist(newSongs)` so auto-play and next/previous controls seamlessly cross pagination boundaries.
+- **End-of-List Indicator**: When no further items exist, `tblListSongs.cr.noticeNoMoreData()` displays a "No more data" indicator.
+
+---
+
+## 🚀 Firebase App Distribution & Local Deployment
+
+### 1. Automated Local Deployment Script (`scripts/deploy_firebase.sh`)
+Build and distribute a production-ready `.ipa` directly to Firebase App Distribution with one command:
+
+```bash
+# Deploy with custom release notes and tester group
+./scripts/deploy_firebase.sh "Version 1.0.0 - Music player ready" "testers"
+```
+
+**Automated Workflow:**
+1. **Test Verification**: Runs `xcodebuild test` to ensure all unit tests pass before archiving.
+2. **Archive Creation**: Creates `build/PlayerApp.xcarchive` using local developer signing (`5KPMR3H66N`).
+3. **IPA Export**: Generates `build/export/PlayerApp.ipa` using `ExportOptions.plist`.
+4. **Firebase Distribution**: Distributes binary to Firebase App ID `1:352387897762:ios:165a889b6b9350de603afb` via `firebase appdistribution:distribute`.
+
+### 2. CI/CD on Push via GitHub Actions (Self-Hosted Local Runner)
+Following the guide from [*iOS CI/CD with GitHub Actions: Firebase Deployment on Push Trigger*](https://medium.com/@vedantshirke/ios-ci-cd-with-github-actions-firebase-deployment-on-push-trigger-part-1-d85ba9d68bfe), the pipeline can run directly on your local Mac runner (`runs-on: self-hosted`) to leverage local Xcode developer certificates without cloud signing configuration:
+
+```yaml
+name: iOS CI/CD - Firebase App Distribution (Local Runner)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build & Distribute
+        run: ./scripts/deploy_firebase.sh "${{ github.event.head_commit.message }}" "testers"
+```
+
+---
+
+## 🛠 Getting Started
 
 ### Prerequisites
 - macOS Sonoma (14+) or macOS Sequoia (15+)
@@ -198,10 +255,10 @@ Before executing requests, network availability is verified:
 ## 🧪 Running Unit Tests
 
 Unit tests are written using Swift's **Swift Testing** framework (`import Testing`) to ensure high code quality, resilience, and test coverage across:
-- **`AudioPlayerServiceTests`**: Queue initialization, playlist bounds, next/previous transitions, and seek position clamping.
+- **`AudioPlayerServiceTests`**: Queue initialization, playlist bounds, next/previous transitions, seek position clamping, and dynamic queue expansion (`appendPlaylist`).
 - **`GeneralMapperTests`**: Transformation of `ListSongRes` and `TopSongFeedRes` into `SongModel`, with fallback handling for null/optional fields and preview URL validation.
 - **`SearchSongParamTests`**: Default and custom search parameters.
-- **`EndpointConstTests`**: Validates search and top songs RSS endpoint routing.
+- **`EndpointConstTests`**: Validates search, top songs RSS, and custom limit endpoint routing.
 
 ### Running Tests in Xcode:
 Press `Cmd + U` with scheme `PlayerApp`.
