@@ -33,10 +33,10 @@ public struct SearchSongParam {
     }
     
     init(term: String,
-         media: String,
-         entity: String,
-         attribute: String,
-         limit: Int) {
+         media: String = "music",
+         entity: String = "song",
+         attribute: String = "songTerm",
+         limit: Int = 25) {
         self.term = term
         self.media = media
         self.entity = entity

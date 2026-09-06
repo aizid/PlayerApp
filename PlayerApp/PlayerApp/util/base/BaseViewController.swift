@@ -20,30 +20,39 @@ class BaseViewController: UIViewController {
     
     weak var delegateBase: BaseViewControllerDelegate?
     
-    private var loadingCounter = 0 {
-        didSet {
-            if loadingCounter > 0 {
-                showProgressDialog()
-            } else {
-                hideProgressDialog()
-            }
-        }
-    }
-    
-    private lazy var loadingDialog: UIActivityIndicatorView = {
-        // Create an indicator.
-        let loadingDialog = UIActivityIndicatorView()
-        loadingDialog.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
-        loadingDialog.center = self.view.center
+    private lazy var loadingOverlayView: UIView = {
+        let overlay = UIView()
+        overlay.translatesAutoresizingMaskIntoConstraints = false
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.15)
         
-        // Also show the indicator even when the animation is stopped.
-        loadingDialog.hidesWhenStopped = false
-        loadingDialog.style = UIActivityIndicatorView.Style.white
+        let box = UIView()
+        box.translatesAutoresizingMaskIntoConstraints = false
+        box.backgroundColor = UIColor.secondarySystemBackground
+        box.layer.cornerRadius = 14
+        box.layer.shadowColor = UIColor.black.cgColor
+        box.layer.shadowOpacity = 0.15
+        box.layer.shadowOffset = CGSize(width: 0, height: 4)
+        box.layer.shadowRadius = 8
         
-        // Start animation.
-        loadingDialog.startAnimating()
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .systemBlue
+        indicator.startAnimating()
         
-        return loadingDialog
+        box.addSubview(indicator)
+        overlay.addSubview(box)
+        
+        NSLayoutConstraint.activate([
+            box.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+            box.centerYAnchor.constraint(equalTo: overlay.centerYAnchor),
+            box.widthAnchor.constraint(equalToConstant: 80),
+            box.heightAnchor.constraint(equalToConstant: 80),
+            
+            indicator.centerXAnchor.constraint(equalTo: box.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: box.centerYAnchor)
+        ])
+        
+        return overlay
     }()
     
     public var screenName: String = ""
@@ -100,41 +109,11 @@ extension BaseViewController {
     
     public func erroHandler<VC: UIViewController>(_ controller: VC, error: String) {
         Log.debug("🔴 ERROR HANDLER NOTICED 🔴 ~> \(error)")
-        if !error.isEmpty {
-            /*let rc = error.getResponseCode
-            let message = error.getResponseMessage
-            let messageDesc = error.getResponseMessageDescription
-            let lastEndpoint = error.getRecentEndpoint
-            
-            CrashLog.nonFatal(
-                userId: SkollaPreference.getEncrypt(for: PreferKey.idAccountNF.rawValue),
-                viewName: String(describing: self),
-                error: error,
-                crashErrorCode: Constant.ERROR_VISIBLE_USER,
-                responseCode: rc,
-                serviceLink: lastEndpoint)
-            
-            switch rc {
-            case "\(ErrMsgConst.SESSION_TIME_OUT)", "0": DialogMapper.sessionLogoutMessage(controller, error: error)
-            case "\(ErrMsgConst.BAD_REQUEST)": DialogMapper.messageBadRequested(lastEndpoint, self, rc, error, message, messageDesc)
-            case "\(ErrMsgConst.DB_INVALID_INSTANCE)":
-                DialogMapper.defaultMessageError(controller, rc: rc, message: message, messageDesc: "msg_reinstall_app".localized())
-            case "\(ErrMsgConst.RESOURCE_NOT_FOUND)":
-                if lastEndpoint == "itembank/app/item" {
-                    DialogMapper.showPopupDeniedStartLatSoal(self)
-                } else {
-                    DialogMapper.messageGeneralError(self, responseCode: rc, message: message)
-                }
-            case "\(ErrMsgConst.ERROR_INFO)": DialogMapper.messageErrorInfo(controller, message: message)
-            case "\(ErrMsgConst.DETECT_NEW_DEVICE)":
-                DialogMapper.showPopupDetectNewDevice(self, responseCode: rc, message: message)
-            default:
-                if rc.contains("\(ErrMsgConst.INACTIVE_ACCOUNT)") {
-                    DialogMapper.showPopupInActiveAccount(self, responseCode: rc, message: Messages.inActiveAccount.isMessageTitle)
-                } else {
-                    DialogMapper.messageGeneralError(self, responseCode: rc, message: message, recentEndpoint: lastEndpoint)
-                }
-            }*/
+        DispatchQueue.main.async {
+            let message = error.isEmpty ? "An unexpected error occurred. Please try again later." : error
+            let alert = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            controller.present(alert, animated: true)
         }
     }
     
@@ -150,19 +129,27 @@ extension BaseViewController {
 extension BaseViewController {
     func showProgressDialog() {
         DispatchQueue.main.async {
-            self.loadingCounter += 1
-            self.loadingDialog.startAnimating()
-            UIApplication.shared.isNetworkActivityIndicatorVisible = true
+            guard self.loadingOverlayView.superview == nil else { return }
+            self.view.addSubview(self.loadingOverlayView)
+            NSLayoutConstraint.activate([
+                self.loadingOverlayView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                self.loadingOverlayView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                self.loadingOverlayView.topAnchor.constraint(equalTo: self.view.topAnchor),
+                self.loadingOverlayView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            ])
+            self.loadingOverlayView.alpha = 0
+            UIView.animate(withDuration: 0.2) {
+                self.loadingOverlayView.alpha = 1.0
+            }
         }
     }
     
     func hideProgressDialog() {
         DispatchQueue.main.async {
-            self.loadingCounter -= 1
-            if self.loadingCounter <= 0 {
-                self.loadingDialog.stopAnimating()
-                UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                self.loadingCounter = 0 // Reset to prevent negative values
+            UIView.animate(withDuration: 0.2, animations: {
+                self.loadingOverlayView.alpha = 0
+            }) { _ in
+                self.loadingOverlayView.removeFromSuperview()
             }
         }
     }

@@ -1,0 +1,32 @@
+stages:
+  - test
+  - build
+
+variables:
+  DEVELOPER_DIR: "/Applications/Xcode.app/Contents/Developer"
+
+unit_tests:
+  stage: test
+  tags:
+    - macos
+    - xcode
+  script:
+    - xcodebuild test -project PlayerApp/PlayerApp.xcodeproj -scheme PlayerApp -destination 'platform=iOS Simulator,name=iPhone 16' -parallel-testing-enabled NO -only-testing:PlayerAppTests
+
+build_package:
+  stage: build
+  tags:
+    - macos
+    - xcode
+  script:
+    - xcodebuild archive -project PlayerApp/PlayerApp.xcodeproj -scheme PlayerApp -configuration Release -destination 'generic/platform=iOS' -archivePath build/PlayerApp.xcarchive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    - mkdir -p build/Payload
+    - cp -r build/PlayerApp.xcarchive/Products/Applications/PlayerApp.app build/Payload/
+    - cd build && zip -r PlayerApp.ipa Payload
+    - zip -r PlayerApp.app.zip PlayerApp.xcarchive/Products/Applications/PlayerApp.app
+  artifacts:
+    name: "PlayerApp-$CI_COMMIT_REF_NAME"
+    paths:
+      - build/PlayerApp.ipa
+      - build/PlayerApp.app.zip
+    expire_in: 14 days

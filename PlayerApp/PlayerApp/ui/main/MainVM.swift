@@ -65,6 +65,9 @@ extension DefaultMainVM {
                         self.getListSongResponse.onNext(.Error(message.isEmpty ? errorResponse.localizedDescription : message))
                     })
                 .disposed(by: disposeBag)
+        } else {
+            self.getListSongResponse.onNext(.isLoad(false))
+            self.getListSongResponse.onNext(.Error("No internet connection. Please check your network and try again."))
         }
     }
     
@@ -85,6 +88,9 @@ extension DefaultMainVM {
                         self.getListSongResponse.onNext(.Error(message.isEmpty ? errorResponse.localizedDescription : message))
                     })
                 .disposed(by: disposeBag)
+        } else {
+            self.getListSongResponse.onNext(.isLoad(false))
+            self.getListSongResponse.onNext(.Error("No internet connection. Please check your network and try again."))
         }
     }
 }
