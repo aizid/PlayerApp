@@ -37,4 +37,10 @@ extension DefaultAppRepository: AppRepository {
             GeneralMapper.transListSongResToModel(response: $0)
         }
     }
+    
+    func getTopSongs() -> Observable<ListSongModel>? {
+        return appRemoteDataSource.getTopSongs().map {
+            GeneralMapper.transTopSongFeedResToModel(response: $0)
+        }
+    }
 }

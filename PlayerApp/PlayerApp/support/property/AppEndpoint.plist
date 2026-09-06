@@ -4,5 +4,7 @@
 <dict>
 	<key>EP_SEARCH</key>
 	<string>search</string>
+	<key>EP_TOP_SONGS</key>
+	<string>us/rss/topsongs/limit=50/json</string>
 </dict>
 </plist>

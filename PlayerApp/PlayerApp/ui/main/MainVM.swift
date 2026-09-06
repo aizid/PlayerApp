@@ -13,6 +13,7 @@ struct MainVMClosures {
 
 protocol MainVMInput {
     func getListSong(request: SearchSongParam)
+    func getTopSongs()
 }
 
 protocol MainVMOutput {
@@ -59,19 +60,32 @@ extension DefaultMainVM {
                         self.getListSongResponse.onNext(.isLoad(false))
                     },
                     onError: { errorResponse in
-                        let errorStat = GlobalFunc.parseErrorByPartResponse(errorResponse.localizedDescription, needError: "errorStat")
                         let message = GlobalFunc.parseErrorByPartResponse(errorResponse.localizedDescription, needError: "message")
-                        
-                        
                         self.getListSongResponse.onNext(.isLoad(false))
-                        self.getListSongResponse.onNext(.Error(message))
+                        self.getListSongResponse.onNext(.Error(message.isEmpty ? errorResponse.localizedDescription : message))
                     })
                 .disposed(by: disposeBag)
-        } else {
-            
-//            DialogControl.showStandardDialog(.noInternet, target: self, nsNotification: SplashVC.myNotification)
         }
     }
     
+    func getTopSongs() {
+        if isInternetAvailable() {
+            self.getListSongResponse.onNext(.isLoad(true))
+            
+            mainUseCase.getTopSongs()?
+                .observe(on: MainScheduler.instance)
+                .subscribe(
+                    onNext: { result in
+                        self.getListSongResponse.onNext(.Success(result))
+                        self.getListSongResponse.onNext(.isLoad(false))
+                    },
+                    onError: { errorResponse in
+                        let message = GlobalFunc.parseErrorByPartResponse(errorResponse.localizedDescription, needError: "message")
+                        self.getListSongResponse.onNext(.isLoad(false))
+                        self.getListSongResponse.onNext(.Error(message.isEmpty ? errorResponse.localizedDescription : message))
+                    })
+                .disposed(by: disposeBag)
+        }
+    }
 }
 

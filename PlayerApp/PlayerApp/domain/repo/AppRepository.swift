@@ -12,4 +12,6 @@ protocol AppRepository {
     @discardableResult
     func getListSong(request: SearchSongParam) -> Observable<ListSongModel>?
     
+    @discardableResult
+    func getTopSongs() -> Observable<ListSongModel>?
 }

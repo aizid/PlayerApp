@@ -34,6 +34,7 @@ public struct PropertyModel: Codable {
     
     //MARK: Get
     public var EP_SEARCH: String?
+    public var EP_TOP_SONGS: String?
 }
 
 

@@ -22,11 +22,15 @@ protocol MainViewDataSource: AnyObject {
     func MainView(_ tableView: UITableView, view: MainView, numberOfRowsInSection section: Int) -> Int
     func MainView(_ view: MainView, cellForRowAt indexPath: IndexPath) -> SongItemInterface
     func MainView(_ view: MainView, isCurrentPlayingAt indexPath: IndexPath) -> (isCurrent: Bool, isPlaying: Bool)
+    func MainView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String?
 }
 
 extension MainViewDataSource {
     func MainView(_ view: MainView, isCurrentPlayingAt indexPath: IndexPath) -> (isCurrent: Bool, isPlaying: Bool) {
         return (false, false)
+    }
+    func MainView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return nil
     }
 }
 
@@ -121,6 +125,10 @@ extension MainView: UITableViewDataSource {
             cell.setPlayingState(isCurrent: playingInfo.isCurrent, isPlaying: playingInfo.isPlaying)
         }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return dataSource?.MainView(tableView, titleForHeaderInSection: section)
     }
 }
 

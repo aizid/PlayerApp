@@ -16,7 +16,7 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
     static let myNotification = Notification.Name(ConstantKey.KEY_LAYOUT_MAIN)
     
     var songList: [SongModel] = []
-    private var currentSearchTerm: String = "upside down"
+    private var currentSearchTerm: String = ""
     private var searchDebounceTimer: Timer?
     
     private let playerBarView: PlayerBarView = {
@@ -57,7 +57,7 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if songList.isEmpty {
-            refreshData(term: currentSearchTerm)
+            loadInitialData()
         }
     }
     
@@ -66,6 +66,7 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
     private func setupViews() {
         mainView.tfSearch.delegate = self
         mainView.tfSearch.returnKeyType = .search
+        mainView.tfSearch.clearButtonMode = .whileEditing
         mainView.tfSearch.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         
         mainView.tblListSongs.contentInset.bottom = 120
@@ -103,7 +104,12 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
         }
     }
     
-    private func refreshData(term: String) {
+    private func loadInitialData() {
+        currentSearchTerm = ""
+        viewModel.getTopSongs()
+    }
+    
+    private func performSearch(term: String) {
         let searchParam = SearchSongParam(term: term, media: "music", entity: "song", attribute: "songTerm", limit: 25)
         viewModel.getListSong(request: searchParam)
     }
@@ -157,7 +163,11 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
 // MARK: - Delegate View
 extension MainVC: MainViewDelegate {
     func RefreshLoad() {
-        refreshData(term: currentSearchTerm)
+        if currentSearchTerm.isEmpty {
+            viewModel.getTopSongs()
+        } else {
+            performSearch(term: currentSearchTerm)
+        }
     }
     
     func MainView(_ view: MainView, _ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -194,6 +204,11 @@ extension MainVC: MainViewDataSource {
         let isCurrent = currentSong?.id == songList[indexPath.row].id
         let isPlaying = AudioPlayerService.shared.isPlaying
         return (isCurrent, isPlaying)
+    }
+    
+    func MainView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if songList.isEmpty { return nil }
+        return currentSearchTerm.isEmpty ? "🔥 Top Trending Songs" : "Search Results (\(songList.count))"
     }
 }
 
@@ -234,9 +249,12 @@ extension MainVC: UITextFieldDelegate {
         searchDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            let query = text.isEmpty ? "upside down" : text
-            self.currentSearchTerm = query
-            self.refreshData(term: query)
+            self.currentSearchTerm = text
+            if text.isEmpty {
+                self.viewModel.getTopSongs()
+            } else {
+                self.performSearch(term: text)
+            }
         }
     }
     
@@ -244,9 +262,19 @@ extension MainVC: UITextFieldDelegate {
         textField.resignFirstResponder()
         searchDebounceTimer?.invalidate()
         let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let query = text.isEmpty ? "upside down" : text
-        currentSearchTerm = query
-        refreshData(term: query)
+        currentSearchTerm = text
+        if text.isEmpty {
+            viewModel.getTopSongs()
+        } else {
+            performSearch(term: text)
+        }
+        return true
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        searchDebounceTimer?.invalidate()
+        currentSearchTerm = ""
+        viewModel.getTopSongs()
         return true
     }
 }

@@ -10,13 +10,14 @@ import Alamofire
 
 public enum APIRouter: URLRequestConvertible {
     case getListSong(param: Parameters?)
+    case getTopSongs
 }
 
 extension APIRouter {
     var method: HTTPMethod {
         switch self {
-        case .getListSong
-            : return .get
+        case .getListSong, .getTopSongs:
+            return .get
         }
     }
 }
@@ -25,6 +26,7 @@ extension APIRouter {
     var endpoint: String {
         switch self {
         case .getListSong: return EndpointConst.getListSong.rawValue
+        case .getTopSongs: return EndpointConst.getTopSongs.rawValue
         }
     }
 }
@@ -32,20 +34,20 @@ extension APIRouter {
 extension APIRouter {
   public func asURLRequest() throws -> URLRequest {
     guard let URL_BASE = URL(string: ConstantProp.BASE_URL) else { fatalError("")}
-    var URL = URL_BASE.appendingPathComponent(self.endpoint)
+    let targetURL = URL(string: self.endpoint, relativeTo: URL_BASE)?.absoluteURL ?? URL_BASE.appendingPathComponent(self.endpoint)
     
     var mParameters: Parameters?
     switch self {
-    case .getListSong(let param)
-        : mParameters = param
-      
-    default: break
+    case .getListSong(let param):
+        mParameters = param
+    case .getTopSongs:
+        mParameters = nil
     }
     
     Log.debug("[PARAMETER]: \(mParameters ?? [:])")
-    Log.debug(URL.absoluteString)
+    Log.debug(targetURL.absoluteString)
     
-    var urlRequest: URLRequest = URLRequest(url: URL)
+    var urlRequest: URLRequest = URLRequest(url: targetURL)
     urlRequest.httpMethod = self.method.rawValue
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 //    let getToken = GlobalFunc.GET_KEYCHAIN_WRAPPER_STRING(key: Constant.KEY_PREFF_TOKEN)
