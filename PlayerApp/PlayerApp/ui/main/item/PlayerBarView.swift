@@ -15,10 +15,19 @@ public final class PlayerBarView: UIView {
     public var onNextTapped: (() -> Void)?
     public var onPreviousTapped: (() -> Void)?
     public var onSeek: ((Float) -> Void)?
+    public var onCloseTapped: (() -> Void)?
     
     public private(set) var isSeeking: Bool = false
     
     // MARK: - Subviews
+    private let btnClose: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        let config = UIImage.SymbolConfiguration(pointSize: 15, weight: .medium)
+        btn.setImage(UIImage(systemName: "xmark.circle.fill", withConfiguration: config), for: .normal)
+        btn.tintColor = .secondaryLabel
+        return btn
+    }()
     private let containerCard: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -140,6 +149,7 @@ public final class PlayerBarView: UIView {
         
         addSubview(containerCard)
         containerCard.addSubview(ivArtwork)
+        containerCard.addSubview(btnClose)
         
         let textStack = UIStackView(arrangedSubviews: [lblTitle, lblArtist])
         textStack.translatesAutoresizingMaskIntoConstraints = false
@@ -167,6 +177,12 @@ public final class PlayerBarView: UIView {
             containerCard.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             containerCard.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
             
+            // Close Button
+            btnClose.topAnchor.constraint(equalTo: containerCard.topAnchor, constant: 6),
+            btnClose.trailingAnchor.constraint(equalTo: containerCard.trailingAnchor, constant: -6),
+            btnClose.widthAnchor.constraint(equalToConstant: 24),
+            btnClose.heightAnchor.constraint(equalToConstant: 24),
+            
             // Artwork
             ivArtwork.leadingAnchor.constraint(equalTo: containerCard.leadingAnchor, constant: 12),
             ivArtwork.topAnchor.constraint(equalTo: containerCard.topAnchor, constant: 12),
@@ -179,7 +195,7 @@ public final class PlayerBarView: UIView {
             textStack.trailingAnchor.constraint(lessThanOrEqualTo: controlsStack.leadingAnchor, constant: -8),
             
             // Controls Stack
-            controlsStack.trailingAnchor.constraint(equalTo: containerCard.trailingAnchor, constant: -12),
+            controlsStack.trailingAnchor.constraint(equalTo: btnClose.leadingAnchor, constant: -8),
             controlsStack.centerYAnchor.constraint(equalTo: ivArtwork.centerYAnchor),
             
             // Play Button Size
@@ -206,10 +222,15 @@ public final class PlayerBarView: UIView {
         btnPlayPause.addTarget(self, action: #selector(actionPlayPause), for: .touchUpInside)
         btnNext.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
         btnPrevious.addTarget(self, action: #selector(actionPrevious), for: .touchUpInside)
+        btnClose.addTarget(self, action: #selector(actionClose), for: .touchUpInside)
         
         slider.addTarget(self, action: #selector(sliderTouchDown), for: .touchDown)
         slider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
         slider.addTarget(self, action: #selector(sliderTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+    }
+    
+    @objc private func actionClose() {
+        onCloseTapped?()
     }
     
     @objc private func actionPlayPause() {

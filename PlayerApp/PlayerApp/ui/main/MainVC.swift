@@ -102,6 +102,19 @@ class MainVC: BaseViewController, StoryboardInstantiable, Alertable {
         playerBarView.onSeek = { progress in
             AudioPlayerService.shared.seek(to: progress)
         }
+        
+        playerBarView.onCloseTapped = { [weak self] in
+            guard let self = self else { return }
+            AudioPlayerService.shared.pause()
+            UIView.animate(withDuration: 0.25, animations: {
+                self.playerBarView.alpha = 0
+                self.playerBarView.transform = CGAffineTransform(translationX: 0, y: 40)
+            }) { _ in
+                self.playerBarView.isHidden = true
+                self.playerBarView.transform = .identity
+            }
+            self.mainView.reloadTableData()
+        }
     }
     
     private func loadInitialData() {
